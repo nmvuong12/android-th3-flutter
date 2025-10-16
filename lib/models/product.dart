@@ -1,3 +1,5 @@
+import 'category.dart';
+
 class Product {
   final int id;
   final String name;
@@ -5,6 +7,7 @@ class Product {
   final double price;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final Category? category;
 
   Product({
     required this.id,
@@ -13,6 +16,7 @@ class Product {
     required this.price,
     required this.createdAt,
     required this.updatedAt,
+    this.category,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -23,6 +27,9 @@ class Product {
       price: (json['price'] as num).toDouble(),
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
+      category: json['category'] != null 
+          ? Category.fromJson(json['category'] as Map<String, dynamic>)
+          : null,
     );
   }
 
@@ -42,6 +49,7 @@ class Product {
       'name': name,
       'desc': desc,
       'price': price,
+      if (category != null) 'category': {'id': category!.id},
     };
   }
 
@@ -50,6 +58,7 @@ class Product {
       'name': name,
       'desc': desc,
       'price': price,
+      if (category != null) 'category': {'id': category!.id},
     };
   }
 
@@ -60,6 +69,7 @@ class Product {
     double? price,
     DateTime? createdAt,
     DateTime? updatedAt,
+    Category? category,
   }) {
     return Product(
       id: id ?? this.id,
@@ -68,6 +78,7 @@ class Product {
       price: price ?? this.price,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      category: category ?? this.category,
     );
   }
 }

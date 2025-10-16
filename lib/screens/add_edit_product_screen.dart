@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/product.dart';
+import '../models/category.dart' as models;
 import '../providers/product_provider.dart';
+import '../providers/category_provider.dart';
 
 class AddEditProductScreen extends StatefulWidget {
   final Product? product;
@@ -17,6 +19,8 @@ class _AddEditProductScreenState extends State<AddEditProductScreen> {
   final _nameController = TextEditingController();
   final _descController = TextEditingController();
   final _priceController = TextEditingController();
+  
+  models.Category? _selectedCategory;
 
   bool get isEditing => widget.product != null;
 
@@ -27,7 +31,13 @@ class _AddEditProductScreenState extends State<AddEditProductScreen> {
       _nameController.text = widget.product!.name;
       _descController.text = widget.product!.desc;
       _priceController.text = widget.product!.price.toString();
+      _selectedCategory = widget.product!.category;
     }
+    
+    // Load categories when screen initializes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<CategoryProvider>().loadCategories();
+    });
   }
 
   @override
@@ -50,6 +60,7 @@ class _AddEditProductScreenState extends State<AddEditProductScreen> {
       price: double.parse(_priceController.text),
       createdAt: isEditing ? widget.product!.createdAt : DateTime.now(),
       updatedAt: DateTime.now(),
+      category: _selectedCategory,
     );
 
     bool success;
@@ -191,6 +202,48 @@ class _AddEditProductScreenState extends State<AddEditProductScreen> {
                 ),
                 maxLines: 3,
                 textCapitalization: TextCapitalization.sentences,
+              ),
+              
+              const SizedBox(height: 16),
+              
+              // Category selection dropdown
+              Consumer<CategoryProvider>(
+                builder: (context, categoryProvider, child) {
+                  return DropdownButtonFormField<models.Category>(
+                    value: _selectedCategory,
+                    decoration: InputDecoration(
+                      labelText: 'Danh mục',
+                      hintText: 'Chọn danh mục sản phẩm (tùy chọn)',
+                      prefixIcon: const Icon(Icons.category_outlined),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey[50],
+                    ),
+                    items: [
+                      const DropdownMenuItem<models.Category>(
+                        value: null,
+                        child: Text('Không có danh mục'),
+                      ),
+                      ...categoryProvider.categories.map((category) {
+                        return DropdownMenuItem<models.Category>(
+                          value: category,
+                          child: Text(category.name),
+                        );
+                      }),
+                    ],
+                    onChanged: (models.Category? newValue) {
+                      setState(() {
+                        _selectedCategory = newValue;
+                      });
+                    },
+                    validator: (value) {
+                      // Category is optional, so no validation needed
+                      return null;
+                    },
+                  );
+                },
               ),
               
               const SizedBox(height: 16),

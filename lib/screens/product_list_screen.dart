@@ -253,6 +253,27 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                   style: TextStyle(color: Colors.grey[600]),
                                 ),
                               ],
+                              if (product.category != null) ...[
+                                const SizedBox(height: 4),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.category,
+                                      size: 16,
+                                      color: Colors.green[600],
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      product.category!.name,
+                                      style: TextStyle(
+                                        color: Colors.green[600],
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                               const SizedBox(height: 8),
                               Row(
                                 children: [
